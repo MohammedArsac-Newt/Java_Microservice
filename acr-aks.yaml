@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aks-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: javaApp
+  template:
+    metadata:
+      labels:
+        app: javaApp
+    spec:
+      containers:
+      - name: docker
+        image: aksnaborsacr.azurecr.io/javamicroservice
+        ports:
+        - containerPort: 9005
+        - containerPort: 3306
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: javaApp
+   namespace: default
+spec:
+   selector:
+      app: javaApp
+   ports:
+      - name: ui-port
+        protocol: TCP
+        port: 9005
+        
+      - name: db-port
+        protocol: TCP
+        port: 3306
+type: LoadBalancer
